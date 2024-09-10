@@ -2,10 +2,15 @@
 ## Version 0.1
 ## Help Section
 
-param([switch] $repair )
+param([switch] $help, $repair)
+if ($help)
+{
+    write-host "Help"
+}
+
 if ($repair)
 {
-    write-host "This is help for this program. It does nothing. Hope that helps."
+    write-host "Repair"
 }
 
 
