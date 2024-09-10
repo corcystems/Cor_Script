@@ -19,7 +19,7 @@ $scriptPath = 'C:\Cor\Cor_Script.ps1'
 ## Get Hash
 $wc = [System.Net.WebClient]::new()
 $localHash = Get-FileHash $scriptPath -Algorithm SHA256
-$fileHash = Get-FileHash -InputStream ($wc.OpenRead(scriptURL)) -Algorithm SHA256
+$fileHash = Get-FileHash -InputStream ($wc.OpenRead($scriptURL)) -Algorithm SHA256
 $fileHash.Hash -eq $localHash.Hash
 
 ## Update Script
