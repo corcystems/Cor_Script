@@ -2,7 +2,7 @@
 ## Version 0.1
 ## Help Section
 
-param([switch] $help, $repair)
+param([switch] $help,[switch] $repair)
 if ($help)
 {
     write-host "Help"
