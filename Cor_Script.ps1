@@ -2,6 +2,26 @@
 ## Version 0.1
 ## Help Section
 
+<#
+.Description
+This is script for some basic tasks at CorCystems.
+
+.PARAMETER dbserver
+Determines if you are deploying to the Production or Dev DB server. Valid values are ProdDB_Server or DevDB_Server
+Must be used with the region parameter. May not be used with the database parameter
+ 
+.PARAMETER database
+Determines if you are deploying to the Sales or Product database. Valid values are sales or product
+May not be used with the dbServer and region parameters
+ 
+.PARAMETER region
+Determines which region you are deploying to. Valid values are Europe, North America or All
+Must be used with the dbserver parameter. May not be used with the database parameter
+ 
+.PARAMETER Comment 
+Allows you to add a comment to your deploy.
+#> 
+
 param([switch] $help,[switch] $repair)
 if ($help)
 {
