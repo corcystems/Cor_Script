@@ -33,7 +33,7 @@ Runs an internet speed test on the machine.
 param(
     [switch] $Help,
     [parameter(Mandatory = $false, ParameterSetName = 'Silent')]
-    [ValidateSet("CWAInstall","CWAUninstall","CWSCInstall","CWSCUninstall","CWSCHInstall","CWSCHUninstall","GetIP","ImmyInstall","ImmyUninstall","PrintRepair","SpeedTest")]
+    [ValidateSet("CWAInstall","CWAUninstall","CWSCInstall","CWSCUninstall","CWSCHInstall","CWSCHUninstall","GetIP","ImmyInstall","ImmyUninstall","PrintRepair","SpeedTest","UpdateScript")]
     [string] $Silent
 )
 
@@ -75,6 +75,9 @@ if ($silent){
         }
         "SpeedTest" {
             $silentApp = "Speed-Test"
+        }
+        "UpdateScript" {
+            $silentApp = "Get-Hash"
         }
     }
 }
@@ -261,7 +264,7 @@ Switch($mainMenuSelection){
         Troubleshooting-Menu
     }
     "3" {
-        Update-CorScript
+        Get-Hash
     }
     "Q" {
         Write-Host "Quitting" -ForegroundColor Green
