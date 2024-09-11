@@ -1,7 +1,7 @@
 <#
 .NOTES
 Author:  Mike Hauser
-Version: 0.1
+Version: 0.2
 
 .SYNOPSIS
 This is script for some basic tasks at CorCystems.
@@ -86,7 +86,7 @@ if ($silent){
 
 
 ######### Variables #########
-$scriptVersion = '0.1'
+$scriptVersion = '0.2'
 $scriptURL = 'https://raw.githubusercontent.com/corcystems/Cor_Script/main/Cor_Script.ps1'
 $scriptPath = 'C:\CorTools\Cor_Script.ps1'
 
@@ -112,7 +112,7 @@ if($fileHash.Hash -eq $localHash.Hash){
 ## Update Script
 function Update-CorScript {
     clear
-    write-host "updating Script"
+    write-host "Updating script then exiting. Relaunch script once finished."
     Invoke-WebRequest -Uri $scriptURL -OutFile $scriptPath
     exit
 }
