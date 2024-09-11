@@ -111,8 +111,7 @@ write-host "Github File Hash: "$fileHash.Hash
 if($fileHash.Hash -eq $localHash.Hash){
     if (-not $silent){
         write-host "Script already up to date. Going back to Main Menu. Press any key to continue.”
-        Write-Host "Press any key to continue."
-        pause -anykey
+        $void = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
         Main-Menu
         } else {
         exit
@@ -273,8 +272,8 @@ Switch($mainMenuSelection){
     "Q" {
         Write-Host "Quitting" -ForegroundColor Green
     } default {
-        Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
-        pause -anykey
+        Write-Host "Please type a valid option. Press any key to try again." -ForegroundColor Yellow
+        $void = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
         Main-Menu
     }
     }
