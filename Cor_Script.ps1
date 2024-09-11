@@ -101,13 +101,19 @@ function Get-Hash {
 $wc = [System.Net.WebClient]::new()
 $localHash = Get-FileHash $scriptPath -Algorithm SHA256
 $fileHash = Get-FileHash -InputStream ($wc.OpenRead($scriptURL)) -Algorithm SHA256
-$fileHash.Hash -eq $localHash.Hash
+if($fileHash.Hash -eq $localHash.Hash){
+    write-host "Script already up to date. Going back to Main Menu."
+    Main-Menu
+} else {
+    Update-CorScript
+}
 }
 
 ## Update Script
 function Update-CorScript {
     clear
     write-host "updating Script"
+    Invoke-WebRequest -Uri $scriptURL -OutFile $scriptPath
     exit
 }
 
@@ -245,7 +251,7 @@ Select a task or Q to quit
 Write-Host "CorCystems, Inc. - Main Menu" -ForegroundColor Cyan
 $mainMenuSelection = Read-Host $mainMenu
 
-Switch ($mainMenuSelection) {
+Switch($mainMenuSelection){
     "1" {
         CorTools-Menu
     }
@@ -257,8 +263,7 @@ Switch ($mainMenuSelection) {
     }
     "Q" {
         Write-Host "Quitting" -ForegroundColor Green
-    }
-    default {
+    } default {
         Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
     }
     }
@@ -280,7 +285,7 @@ Select a task or Q to quit
 Write-Host "CorCystems, Inc. - Cor Tools Menu" -ForegroundColor Cyan
 $corToolsMenuSelection = Read-Host $corToolsMenu
 
-Switch ($corToolsMenuSelection) {
+Switch($corToolsMenuSelection){
     "1" {
         $corApp = "CWA"
         CorToolsOptions-Menu
@@ -302,8 +307,7 @@ Switch ($corToolsMenuSelection) {
     }
     "Q" {
         Write-Host "Quitting" -ForegroundColor Green
-    }
-    default {
+    } default {
         Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
     }
     }
@@ -323,7 +327,7 @@ Select a task or Q to quit
 Write-Host "CorCystems, Inc. - Cor Tools Options Menu" -ForegroundColor Cyan
 $corToolsMenuOptionsSelection = Read-Host $corToolsMenuOptions
 
-Switch ($corToolsMenuOptionsSelection) {
+Switch($corToolsMenuOptionsSelection){
     "1" {
         $corAppAction = "Uninstall"
         $corAppSelection = $corApp + '-' + $corAppAction
@@ -340,8 +344,7 @@ Switch ($corToolsMenuOptionsSelection) {
     }
     "Q" {
         Write-Host "Quitting" -ForegroundColor Green
-    }
-    default {
+    } default {
         Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
     }
     }
@@ -368,7 +371,7 @@ Select a task or Q to quit
 Write-Host "CorCystems, Inc. - Troubleshooting Menu" -ForegroundColor Cyan
 $troubleshootingMenuSelection = Read-Host $troubleshootingMenu
 
-Switch ($troubleshootingMenuSelection) {
+Switch($troubleshootingMenuSelection){
     "1" {
         Domain-Info
     }
@@ -398,8 +401,7 @@ Switch ($troubleshootingMenuSelection) {
     }
     "Q" {
         Write-Host "Quitting" -ForegroundColor Green
-    }
-    default {
+    } default {
         Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
     }
     }
@@ -408,7 +410,7 @@ Switch ($troubleshootingMenuSelection) {
 
 ### AfterTools-Menu Menu ###
 function AfterOptions-Menu{
-    if ($silent){
+    if($silent){
             exit
         }
 write-host ""
