@@ -274,6 +274,8 @@ Switch($mainMenuSelection){
         Write-Host "Quitting" -ForegroundColor Green
     } default {
         Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
+        pause -anykey
+        Main-Menu
     }
     }
 }
