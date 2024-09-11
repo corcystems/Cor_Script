@@ -110,7 +110,9 @@ write-host "Github File Hash: " + $fileHash.Hash
 
 if($fileHash.Hash -eq $localHash.Hash){
     if (-not $silent){
-        write-host "Script already up to date. Going back to Main Menu."
+        write-host "Script already up to date. Going back to Main Menu. Press any key to continue.”
+        Write-Host “Press any key to continue.”
+        pause -timeout 10 -anykey
         Main-Menu
         } else {
         exit
