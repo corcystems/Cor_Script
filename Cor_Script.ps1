@@ -102,6 +102,8 @@ $wc = [System.Net.WebClient]::new()
 $localHash = Get-FileHash $scriptPath -Algorithm SHA256
 $fileHash = Get-FileHash -InputStream ($wc.OpenRead($scriptURL)) -Algorithm SHA256
 if($fileHash.Hash -eq $localHash.Hash){
+    write-host "Local File Hash : " + $localHash.Hash
+    write-host "Github File Hash: " + $fileHash.Hash
     write-host "Script already up to date. Going back to Main Menu."
     Main-Menu
 } else {
