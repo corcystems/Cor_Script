@@ -105,8 +105,8 @@ $wc = [System.Net.WebClient]::new()
 $localHash = Get-FileHash $scriptPath -Algorithm SHA256
 $fileHash = Get-FileHash -InputStream ($wc.OpenRead($scriptURL)) -Algorithm SHA256
 
-write-host "Local File Hash : " $localHash.Hash
-write-host "Github File Hash: " $fileHash.Hash
+write-host "Local File Hash : $localHash.Hash"
+write-host "Github File Hash: $fileHash.Hash"
 
 if($fileHash.Hash -eq $localHash.Hash){
     if (-not $silent){
