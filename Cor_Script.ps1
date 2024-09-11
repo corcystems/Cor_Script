@@ -77,7 +77,7 @@ if ($silent){
             $silentApp = "Speed-Test"
         }
         "UpdateScript" {
-            $silentApp = "Get-Hash"
+            $silentApp = "Update-CorScript"
         }
     }
 }
@@ -99,28 +99,30 @@ $scriptPath = 'C:\CorTools\Cor_Script.ps1'
 
 
 ######### Functions #########
-## Get and Compare Script Hash
-function Get-Hash {
+## Get and Compare Script Hash then Update Script
+function Update-CorScript {
 $wc = [System.Net.WebClient]::new()
 $localHash = Get-FileHash $scriptPath -Algorithm SHA256
 $fileHash = Get-FileHash -InputStream ($wc.OpenRead($scriptURL)) -Algorithm SHA256
-if($fileHash.Hash -eq $localHash.Hash){
-    write-host "Local File Hash : " + $localHash.Hash
-    write-host "Github File Hash: " + $fileHash.Hash
-    write-host "Script already up to date. Going back to Main Menu."
-    Main-Menu
-} else {
-    Update-CorScript
-}
-}
 
-## Update Script
-function Update-CorScript {
-    clear
+write-host "Local File Hash : " + $localHash.Hash
+write-host "Github File Hash: " + $fileHash.Hash
+
+if($fileHash.Hash -eq $localHash.Hash){
+    if (-not $silent){
+        write-host "Script already up to date. Going back to Main Menu."
+        Main-Menu
+        } else {
+        exit
+        }
+} else {
     write-host "Updating script then exiting. Relaunch script once finished."
     Invoke-WebRequest -Uri $scriptURL -OutFile $scriptPath
     exit
 }
+}
+
+
 
 
 ### CorCystem Tools Functions ###
@@ -264,7 +266,7 @@ Switch($mainMenuSelection){
         Troubleshooting-Menu
     }
     "3" {
-        Get-Hash
+        Update-CorScript
     }
     "Q" {
         Write-Host "Quitting" -ForegroundColor Green
