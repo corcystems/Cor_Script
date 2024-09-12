@@ -139,13 +139,13 @@ if($fileHash.Hash -eq $localHash.Hash){
 # CWA Uninstall
 function CWA-Uninstall{
     clear
-    write-host "Uninstalling CW Automate then sleeping for 5 seconds before continuing."
+    write-host "Uninstalling CW Automate then sleeping for 15 seconds before continuing."
     if (Test-Path -Path $LabtechUninstallerLocalPath) {
         Remove-Item $LabtechUninstallerLocalPath
     }    
     Invoke-WebRequest -Uri $LabtechUninstallerURL -OutFile $LabtechUninstallerLocalPath
     & $LabtechUninstallerLocalPath
-    Start-Sleep -Seconds 5
+    Start-Sleep -Seconds 15
     AfterOptions-Menu
 }
 # CWA Install
