@@ -4,7 +4,7 @@ Author:  Mike Hauser
 Version: 0.2
 
 .SYNOPSIS
-This is script for some basic tasks at CorCystems.
+This is script for some tasks at CorCystems.
 
 .Description
 This is script can be used by technicians for basic CorCystems tasks.
@@ -93,7 +93,15 @@ $scriptVersion = '0.2'
 $scriptURL = 'https://raw.githubusercontent.com/corcystems/Cor_Script/main/Cor_Script.ps1'
 $scriptPath = 'C:\CorTools\Cor_Script.ps1'
 
-
+$LabtechServerURL = "https://labtech.corcystems.com"
+$LabtechUninstallerURL = "https://labtech.corcystems.com/labtech/service/LabUninstall.exe"
+$LabtechInstallerURL = "https://labtech.corcystems.com/labtech/service/LabTechRemoteAgent.msi"
+$LabtechUninstallerLocalPath = "C:\CorTools\LabUninstall.exe"
+$LabtechInstalerLocalPath = "C:\CorTools\LabTechRemoteAgent.msi"
+$LabtechFilesLocalPath = "C:\Windows\LTSvc"
+$LTServices = @("LTSvcMon", "LTService")
+$LTProcesses = @("LTSvcMon","LTSVC","LTClient","LTTray")
+$LabtechServerPassword = '/STFO7fbHC/H7qighp5SQVQJi3rKlFfM'
 
 
 
@@ -131,13 +139,42 @@ if($fileHash.Hash -eq $localHash.Hash){
 # CWA Uninstall
 function CWA-Uninstall{
     clear
-    write-host "CWA Uninstall"
+    write-host "Uninstalling CW Automate then sleeping for 5 seconds before continuing."
+    if (Test-Path -Path $LabtechUninstallerLocalPath) {
+        Remove-Item $LabtechUninstallerLocalPath
+    }    
+    Invoke-WebRequest -Uri $LabtechUninstallerURL -OutFile $LabtechUninstallerLocalPath
+    & $LabtechUninstallerLocalPath
+    Start-Sleep -Seconds 5
     AfterOptions-Menu
 }
 # CWA Install
 function CWA-Install{
     clear
-    write-host "CWA Install"
+    write-host "Please type the agents Location ID number. Will default to 1 if nothing is entered."
+    $ClientLocation = read-host "Location ID: "
+
+    # Default to 1 if not filled out.
+    if ($ClientLocation -eq $null){
+        $ClientLocation = '1'
+        }
+    if ($ClientLocation -eq ""){
+        $ClientLocation = '1'
+        }
+    # Loop back to the start if an integer was not entered.
+    if($ClientLocation is not integer){
+        write-host "Please type a proper Location ID number and try again."
+        $void = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        $ClientLocation = $null
+        CWA-Install
+        }
+    # Download and install CW Automate
+    write-host "Downloading then launching CW Automate installer for Location $ClientLocation."
+    if (Test-Path -Path $LabtechInstallerURL) {
+        Remove-Item $LabtechInstallerURL
+    }    
+    Invoke-WebRequest -Uri $LabtechInstallerURL -OutFile $LabtechInstalerLocalPath
+    msiexec.exe /i C:\LabTechRemoteAgent.msi /quiet /norestart SERVERADDRESS=$LabtechServerURL SERVERPASS=$LabtechServerPassword LOCATION=$ClientLocation
     AfterOptions-Menu
 }
 
