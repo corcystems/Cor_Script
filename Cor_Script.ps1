@@ -96,8 +96,9 @@ $scriptPath = 'C:\CorTools\Cor_Script.ps1'
 $LabtechServerURL = "https://labtech.corcystems.com"
 $LabtechUninstallerURL = "https://labtech.corcystems.com/labtech/service/LabUninstall.exe"
 $LabtechInstallerURL = "https://labtech.corcystems.com/labtech/service/LabTechRemoteAgent.msi"
-$LabtechUninstallerLocalPath = "C:\CorTools\LabUninstall.exe"
-$LabtechInstalerLocalPath = "C:\CorTools\LabTechRemoteAgent.msi"
+$LabtechLocalPath = "C:\CorTools\CWA\"
+$LabtechUninstallerLocal = "LabUninstall.exe"
+$LabtechInstalerLocal = "LabTechRemoteAgent.msi"
 $LabtechFilesLocalPath = "C:\Windows\LTSvc"
 $LTServices = @("LTSvcMon", "LTService")
 $LTProcesses = @("LTSvcMon","LTSVC","LTClient","LTTray")
@@ -140,11 +141,11 @@ if($fileHash.Hash -eq $localHash.Hash){
 function CWA-Uninstall{
     clear
     write-host "Uninstalling CW Automate then sleeping for 15 seconds before continuing."
-    if (Test-Path -Path $LabtechUninstallerLocalPath) {
-        Remove-Item $LabtechUninstallerLocalPath
+    if (Test-Path -Path '$LabtechLocalPath$LabtechUninstallerLocal') {
+        Remove-Item '$LabtechLocalPath$LabtechUninstallerLocal' -force
     }    
-    Invoke-WebRequest -Uri $LabtechUninstallerURL -OutFile $LabtechUninstallerLocalPath
-    & $LabtechUninstallerLocalPath
+    Invoke-WebRequest -Uri $LabtechUninstallerURL -OutFile '$LabtechLocalPath$LabtechUninstallerLocal'
+    & '$LabtechLocalPath$LabtechUninstallerLocal'
     Start-Sleep -Seconds 15
     AfterOptions-Menu
 }
@@ -173,11 +174,11 @@ function CWA-Install{
         }
     # Download and install CW Automate
     write-host "Downloading then launching CW Automate installer for Location $ClientLocation."
-    if (Test-Path -Path $LabtechInstallerURL) {
-        Remove-Item $LabtechInstallerURL
+    if (Test-Path -Path '$LabtechLocalPath$LabtechInstalerLocal') {
+        Remove-Item '$LabtechLocalPath$LabtechInstalerLocal'
     }    
-    Invoke-WebRequest -Uri $LabtechInstallerURL -OutFile $LabtechInstalerLocalPath
-    msiexec.exe /i C:\LabTechRemoteAgent.msi /quiet /norestart SERVERADDRESS=$LabtechServerURL SERVERPASS=$LabtechServerPassword LOCATION=$ClientLocation
+    Invoke-WebRequest -Uri $LabtechInstallerURL -OutFile '$LabtechLocalPath$LabtechInstalerLocal'
+    msiexec.exe /i '$LabtechLocalPath$LabtechInstalerLocal' /quiet /norestart SERVERADDRESS=$LabtechServerURL SERVERPASS=$LabtechServerPassword LOCATION=$ClientLocation
     AfterOptions-Menu
 }
 
