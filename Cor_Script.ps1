@@ -163,7 +163,7 @@ function CWA-Install{
         $ClientLocation = '1'
         }
     # Loop back to the start if an integer was not entered.
-    $locationInteger = return $ClientLocation -match "^[\d\.]+$"
+    $locationInteger = $ClientLocation -match '^[0-9]+$'
     if($locationInteger){
         write-host "Downloading then launching CW Automate installer for Location $ClientLocation."
         } else {
