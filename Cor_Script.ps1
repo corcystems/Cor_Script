@@ -1,7 +1,7 @@
 <#
 .NOTES
 Author:  Mike Hauser
-Version: 0.3
+Version: 1.0
 
 .SYNOPSIS
 This is script for some tasks at CorCystems.
@@ -92,10 +92,11 @@ if ($silent){
 
 
 ######### Variables #########
-$scriptVersion = '0.3'
+$scriptVersion = '1.0'
 $scriptURL = 'https://raw.githubusercontent.com/corcystems/Cor_Script/main/Cor_Script.ps1'
 $scriptPath = 'C:\CorTools\Cor_Script.ps1'
 
+# CW Automate (Labtech)
 $LabtechServerURL = "https://labtech.corcystems.com"
 $LabtechUninstallerURL = "https://labtech.corcystems.com/labtech/service/LabUninstall.exe"
 $LabtechInstallerURL = "https://labtech.corcystems.com/labtech/service/LabTechRemoteAgent.msi"
@@ -106,6 +107,19 @@ $LabtechFilesLocalPath = "C:\Windows\LTSvc"
 $LTServices = @("LTSvcMon", "LTService")
 $LTProcesses = @("LTSvcMon","LTSVC","LTClient","LTTray")
 $LabtechServerPassword = '/STFO7fbHC/H7qighp5SQVQJi3rKlFfM'
+
+# CW ScreenConnect
+$CWSCInstallerURL = "https://join.corcystems.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest"
+$CWSCLocalPath = "C:\CorTools\CWSC\"
+$CWSCInstalerLocal = "C:\CorTools\CWSC\ScreenConnect.ClientSetup.msi"
+
+# CW ScreenConnect Hosted
+$CWSCHInstallerURL = "https://corcystems.screenconnect.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest"
+$CWSCHLocalPath = "C:\CorTools\CWSCH\"
+$CWSCHInstalerLocal = "C:\CorTools\CWSCH\ScreenConnect.ClientSetup.msi"
+
+
+# ImmyBot
 
 
 
@@ -194,12 +208,40 @@ function CWA-Install{
 function CWSC-Uninstall{
     clear
     write-host "CWSC Uninstall"
+    $cwScreenConnect = "8d6cd6b3656cd6f5"
+    $cwSCUninstall32 = gci "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match $cwScreenConnect } | select UninstallString
+    $cwSCUuninstall64 = gci "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match $cwScreenConnect } | select UninstallString
+    if ($cwSCUuninstall64) {
+        $cwSCUuninstall64 = $cwSCUuninstall64.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
+        $cwSCUuninstall64 = $cwSCUuninstall64.Trim()
+        Write "Uninstalling CW ScreenConnect"
+        start-process "msiexec.exe" -arg "/X $cwSCUuninstall64 /qb" -Wait
+    }
+    if ($cwSCUuninstall32) {
+        $cwSCUuninstall32 = $cwSCUuninstall32.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
+        $cwSCUuninstall32 = $cwSCUuninstall32.Trim()
+        Write "Uninstalling CW ScreenConnect"
+        start-process "msiexec.exe" -arg "/X $cwSCUuninstall32 /qb" -Wait
+    }
     AfterOptions-Menu
 }
 # CWSC Install
 function CWSC-Install{
     clear
     write-host "CWSC Install"
+    New-Item $CWSCLocalPath -Type Directory
+    if (Test-Path -Path $CWSCInstalerLocal) {
+        Remove-Item $CWSCInstalerLocal -force
+    }
+    if(!(Test-Path -path "$CWSCLocalPath")){
+        New-Item $CWSCLocalPath -Type Directory
+    }
+    if (Test-Path -Path $CWSCInstalerLocal) {
+    Remove-Item $CWSCInstalerLocal -force
+    }
+
+    Invoke-WebRequest -Uri $CWSCInstallerURL -OutFile $CWSCInstalerLocal
+    msiexec.exe /i $CWSCInstalerLocal /quiet /norestart
     AfterOptions-Menu
 }
 ## CW ScreenConnect Hosted
@@ -207,12 +249,40 @@ function CWSC-Install{
 function CWSCH-Uninstall{
     clear
     write-host "CWSCH Uninstall"
+    $cwScreenConnect = "f83c838e121e819c"
+    $cwSCUninstall32 = gci "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match $cwScreenConnect } | select UninstallString
+    $cwSCUuninstall64 = gci "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match $cwScreenConnect } | select UninstallString
+    if ($cwSCUuninstall64) {
+        $cwSCUuninstall64 = $cwSCUuninstall64.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
+        $cwSCUuninstall64 = $cwSCUuninstall64.Trim()
+        Write "Uninstalling Hosted CW ScreenConnect"
+        start-process "msiexec.exe" -arg "/X $cwSCUuninstall64 /qb" -Wait
+    }
+    if ($cwSCUuninstall32) {
+        $cwSCUuninstall32 = $cwSCUuninstall32.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
+        $cwSCUuninstall32 = $cwSCUuninstall32.Trim()
+        Write "Uninstalling Hosted CW ScreenConnect"
+        start-process "msiexec.exe" -arg "/X $cwSCUuninstall32 /qb" -Wait
+    }
     AfterOptions-Menu
 }
 # CWSCH Install
 function CWSCH-Install{
     clear
     write-host "CWSCH Install"
+    New-Item $CWSCHLocalPath -Type Directory
+    if (Test-Path -Path $CWSCHInstalerLocal) {
+        Remove-Item $CWSCHInstalerLocal -force
+    }
+    if(!(Test-Path -path "$CWSCHLocalPath")){
+        New-Item $CWSCHLocalPath -Type Directory
+    }
+    if (Test-Path -Path $CWSCHInstalerLocal) {
+    Remove-Item $CWSCHInstalerLocal -force
+    }
+
+    Invoke-WebRequest -Uri $CWSCHInstallerURL -OutFile $CWSCHInstalerLocal
+    msiexec.exe /i $CWSCHInstalerLocal /quiet /norestart
     AfterOptions-Menu
 }
 
@@ -221,6 +291,21 @@ function CWSCH-Install{
 function Immy-Uninstall{
     clear
     write-host "Immybot Uninstall"
+    $ImmyBot = "immy.bot"
+    $ImmyBot32 = gci "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match $ImmyBot } | select UninstallString
+    $ImmyBot64 = gci "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" | foreach { gp $_.PSPath } | ? { $_ -match $ImmyBot } | select UninstallString
+    if ($ImmyBot64) {
+        $ImmyBot64 = $ImmyBot64.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
+        $ImmyBot64 = $ImmyBot64.Trim()
+        Write "Uninstalling ImmyBot"
+        start-process "msiexec.exe" -arg "/X $ImmyBot64 /qb" -Wait
+    }
+    if ($ImmyBot32) {
+        $ImmyBot32 = $ImmyBot32.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
+        $ImmyBot32 = $ImmyBot32.Trim()
+        Write "Uninstalling ImmyBot"
+        start-process "msiexec.exe" -arg "/X $ImmyBot32 /qb" -Wait
+    }
     AfterOptions-Menu
 }
 # Immybot Install
