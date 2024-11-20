@@ -120,7 +120,9 @@ $CWSCHInstalerLocal = "C:\CorTools\CWSCH\ScreenConnect.ClientSetup.msi"
 
 
 # ImmyBot
-
+$ImmyInstallerURL = "https://corcystems.immy.bot/"
+$ImmyLocalPath = "C:\CorTools\ImmyBot\"
+$ImmyInstalerLocal = "C:\CorTools\ImmyBot\ImmyBot.msi"
 
 
 
@@ -312,6 +314,19 @@ function Immy-Uninstall{
 function Immy-Install{
     clear
     write-host "Immybot Install"
+    New-Item $ImmyLocalPath -Type Directory
+    if (Test-Path -Path $ImmyInstalerLocal) {
+        Remove-Item $ImmyInstalerLocal -force
+    }
+    if(!(Test-Path -path "$ImmyLocalPath")){
+        New-Item $ImmyLocalPath -Type Directory
+    }
+    if (Test-Path -Path $ImmyInstalerLocal) {
+    Remove-Item $ImmyInstalerLocal -force
+    }
+
+    Invoke-WebRequest -Uri $ImmyInstallerURL -OutFile $ImmyInstalerLocal
+    msiexec.exe /i $ImmyInstalerLocal /quiet /norestart
     AfterOptions-Menu
 }
 
