@@ -133,19 +133,19 @@ $wc = [System.Net.WebClient]::new()
 $localHash = Get-FileHash $scriptPath -Algorithm SHA256
 $fileHash = Get-FileHash -InputStream ($wc.OpenRead($scriptURL)) -Algorithm SHA256
 
-write-host "Local File Hash : "$localHash.Hash
-write-host "Github File Hash: "$fileHash.Hash
+write-host 'Local File Hash : '$localHash.Hash
+write-host 'Github File Hash: '$fileHash.Hash
 
 if($fileHash.Hash -eq $localHash.Hash){
     if (-not $silent){
-        write-host "Script already up to date. Going back to Main Menu. Press any key to continue.”
+        write-host 'Script already up to date. Going back to Main Menu. Press any key to continue.'
         $void = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
         Main-Menu
         } else {
         exit
         }
 } else {
-    write-host "Updating script then exiting. Relaunch script once finished."
+    write-host 'Updating script then exiting. Relaunch script once finished.'
     Invoke-WebRequest -Uri $scriptURL -OutFile $scriptPath
     exit
 }
@@ -299,13 +299,13 @@ function Immy-Uninstall{
     if ($ImmyBot64) {
         $ImmyBot64 = $ImmyBot64.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
         $ImmyBot64 = $ImmyBot64.Trim()
-        Write "Uninstalling ImmyBot"
+        Write 'Uninstalling ImmyBot'
         start-process "msiexec.exe" -arg "/X $ImmyBot64 /qb" -Wait
     }
     if ($ImmyBot32) {
         $ImmyBot32 = $ImmyBot32.UninstallString -Replace "msiexec.exe","" -Replace "/I","" -Replace "/X",""
         $ImmyBot32 = $ImmyBot32.Trim()
-        Write "Uninstalling ImmyBot"
+        Write 'Uninstalling ImmyBot'
         start-process "msiexec.exe" -arg "/X $ImmyBot32 /qb" -Wait
     }
     AfterOptions-Menu
@@ -313,7 +313,7 @@ function Immy-Uninstall{
 # Immybot Install
 function Immy-Install{
     clear
-    write-host "Immybot Install"
+    write-host 'Immybot Install'
     New-Item $ImmyLocalPath -Type Directory
     if (Test-Path -Path $ImmyInstalerLocal) {
         Remove-Item $ImmyInstalerLocal -force
@@ -336,32 +336,32 @@ function Immy-Install{
 # SFC
 function SFC-Scan{
     clear
-    write-host "sfc /scannow"
+    write-host 'sfc /scannow'
     AfterOptions-Menu
 }
 # DISM
 function DISM-Scan{
     clear
-    write-host "dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase"
-    write-host "dism.exe /Online /Cleanup-Image /RestoreHealth"
+    write-host 'dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase'
+    write-host 'dism.exe /Online /Cleanup-Image /RestoreHealth'
     AfterOptions-Menu
 }
 # Optimize
 function Optimize-Vol{
     clear
-    write-host "Optimize-Volume -DriveLetter C -Defrag -Verbose"
+    write-host 'Optimize-Volume -DriveLetter C -Defrag -Verbose'
     AfterOptions-Menu
 }
 # Repair
 function Repair-Vol{
     clear
-    write-host "Repair-Volume -DriveLetter C -OfflineScanAndFix"
+    write-host 'Repair-Volume -DriveLetter C -OfflineScanAndFix'
     AfterOptions-Menu
 }
 # reset and clear print spooler
 function Repair-Spooler{
     clear
-    write-host "Repair Spooler"
+    write-host 'Repair Spooler'
     AfterOptions-Menu
 }
 # Run sysinternaltools
@@ -377,16 +377,22 @@ Function SysInternal-Tools {
 
     $output = Invoke-WebRequest live.sysinternals.com/tools -UseBasicParsing
 
-
-    $tools = foreach($entry in $output.Links.outerhtml){
-        if($entry -match 'tools/(?<URL>.+?)">(?<FileName>.+?.exe)<'){
-            $Matches.Remove(0)
-            $Matches.URL = "$baseurl/$($Matches.URL)"
-            [PSCustomObject]$Matches
+    $tools1 = foreach($entry1 in $output.Links.outerhtml){
+	    $entry1.Replace('<A HREF="','')
         }
+    $tools2 = foreach($entry2 in $tools1){
+	    $entry2.Replace('</A>','')
+        }
+    $tools3 = foreach($entry3 in $tools2){
+	    $entry3.Replace('">',' ')
+        }
+    $firstBlank, $tools4= $tools3
+
+    $tools = foreach($entry4 in $tools4){
+	    $entry4 | ConvertFrom-String -PropertyNames URL, FileName
     }
 
-    $selected = $tools | Select-Object FileName, URL | Out-GridView -PassThru -Title "Please select the tool(s) to download"
+    $selected = $tools | Select-Object FileName, URL | Out-GridView -PassThru -Title 'Please select the tool(s) to download'
 
     if(-not $selected){
         return
@@ -433,32 +439,32 @@ function Speed-Test{
 ## Main Menu
 function Main-Menu{
 clear
-$mainMenu=@"
+$mainMenu=@'
 1 CorCystems Tools
 2 Troubleshooting
 3 Update Script (current: $scriptVersion)
 Q Quit
 Select a task or Q to quit
-"@
+'@
 
-Write-Host "CorCystems, Inc. - Main Menu" -ForegroundColor Cyan
+Write-Host 'CorCystems, Inc. - Main Menu' -ForegroundColor Cyan
 $mainMenuSelection = Read-Host $mainMenu
 
 Switch($mainMenuSelection){
-    "1" {
+    '1' {
         CorTools-Menu
     }
-    "2" {
+    '2' {
         Troubleshooting-Menu
     }
-    "3" {
+    '3' {
         Update-CorScript
     }
-    "Q" {
-        Write-Host "Quitting" -ForegroundColor Green
+    'Q' {
+        Write-Host 'Quitting' -ForegroundColor Green
     } default {
-        Write-Host "Please type a valid option. Press any key to try again." -ForegroundColor Yellow
-        $void = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        Write-Host 'Please type a valid option. Press any key to try again.' -ForegroundColor Yellow
+        $void = $host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
         Main-Menu
     }
     }
@@ -467,7 +473,7 @@ Switch($mainMenuSelection){
 ### CorTools Menu ###
 function CorTools-Menu{
 clear
-$corToolsMenu=@"
+$corToolsMenu=@'
 1 CW Automate
 2 CW ScreenConnect
 3 CW ScreenConnect (Hosted)
@@ -475,35 +481,35 @@ $corToolsMenu=@"
 B Go Back to Main Menu.
 Q Quit
 Select a task or Q to quit
-"@
+'@
 
-Write-Host "CorCystems, Inc. - Cor Tools Menu" -ForegroundColor Cyan
+Write-Host 'CorCystems, Inc. - Cor Tools Menu' -ForegroundColor Cyan
 $corToolsMenuSelection = Read-Host $corToolsMenu
 
 Switch($corToolsMenuSelection){
-    "1" {
-        $corApp = "CWA"
+    '1' {
+        $corApp = 'CWA'
         CorToolsOptions-Menu
     }
-    "2" {
-        $corApp = "CWSC"
+    '2' {
+        $corApp = 'CWSC'
         CorToolsOptions-Menu
     }
-    "3" {
-        $corApp = "CWSCH"
+    '3' {
+        $corApp = 'CWSCH'
         CorToolsOptions-Menu
     }
-    "4" {
-        $corApp = "Immy"
+    '4' {
+        $corApp = 'Immy'
         CorToolsOptions-Menu
     }
-    "B" {
+    'B' {
         Main-Menu
     }
-    "Q" {
-        Write-Host "Quitting" -ForegroundColor Green
+    'Q' {
+        Write-Host 'Quitting' -ForegroundColor Green
     } default {
-        Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
+        Write-Host 'Please type a valid option and try again.' -ForegroundColor Yellow
     }
     }
 }
@@ -511,36 +517,36 @@ Switch($corToolsMenuSelection){
 ### CorTools-Menu Menu ###
 function CorToolsOptions-Menu{
 clear
-$corToolsMenuOptions=@"
+$corToolsMenuOptions=@'
 1 Uninstall
 2 Install
 B Go Back to Main Menu.
 Q Quit
 Select a task or Q to quit
-"@
+'@
     
-Write-Host "CorCystems, Inc. - Cor Tools Options Menu" -ForegroundColor Cyan
+Write-Host 'CorCystems, Inc. - Cor Tools Options Menu' -ForegroundColor Cyan
 $corToolsMenuOptionsSelection = Read-Host $corToolsMenuOptions
 
 Switch($corToolsMenuOptionsSelection){
-    "1" {
-        $corAppAction = "Uninstall"
+    '1' {
+        $corAppAction = 'Uninstall'
         $corAppSelection = $corApp + '-' + $corAppAction
         & $corAppSelection
 
     }
-    "2" {
-        $corAppAction = "Install"
+    '2' {
+        $corAppAction = 'Install'
         $corAppSelection = $corApp + '-' + $corAppAction
         & $corAppSelection           
     }
-    "B" {
+    'B' {
         Main-Menu
     }
-    "Q" {
-        Write-Host "Quitting" -ForegroundColor Green
+    'Q' {
+        Write-Host 'Quitting' -ForegroundColor Green
     } default {
-        Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
+        Write-Host 'Please type a valid option and try again.' -ForegroundColor Yellow
     }
     }
 }
@@ -549,7 +555,7 @@ Switch($corToolsMenuOptionsSelection){
 ### Troubleshooting-Menu Menu ###
 function Troubleshooting-Menu{
 clear
-$troubleshootingMenu=@"
+$troubleshootingMenu=@'
 1 Grab Domain-Info
 2 Grab Public IP
 3 Optimize C Drive Volume
@@ -562,46 +568,46 @@ $troubleshootingMenu=@"
 B Go Back to Main Menu.
 Q Quit
 Select a task or Q to quit
-"@
+'@
         
-Write-Host "CorCystems, Inc. - Troubleshooting Menu" -ForegroundColor Cyan
+Write-Host 'CorCystems, Inc. - Troubleshooting Menu' -ForegroundColor Cyan
 $troubleshootingMenuSelection = Read-Host $troubleshootingMenu
 
 Switch($troubleshootingMenuSelection){
-    "1" {
+    '1' {
         Domain-Info
     }
-    "2" {
+    '2' {
         Public-IP
     }
-    "3" {
+    '3' {
         Optimize-Vol
     }
-    "4" {
+    '4' {
         Repair-Vol
     }
-    "5" {
+    '5' {
         Repair-Spooler
     }
-    "6" {
+    '6' {
         DISM-Scan
     }
-    "7" {
+    '7' {
         SFC-Scan
     }
-    "8" {
+    '8' {
         Speed-Test
     }
-    "9" {
+    '9' {
         SysInternal-Tools
     }
-    "B" {
+    'B' {
         Main-Menu
     }
-    "Q" {
-        Write-Host "Quitting" -ForegroundColor Green
+    'Q' {
+        Write-Host 'Quitting' -ForegroundColor Green
     } default {
-        Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
+        Write-Host 'Please type a valid option and try again.' -ForegroundColor Yellow
     }
     }
 }
@@ -612,26 +618,26 @@ function AfterOptions-Menu{
     if($silent){
             exit
         }
-write-host ""
-write-host ""
-$afterToolsMenu=@"
+write-host ''
+write-host ''
+$afterToolsMenu=@'
 B Go Back to Main Menu.
 Q Quit
 Select a task or Q to quit
-"@
+'@
 
-Write-Host "CorCystems, Inc. - After Tools Menu" -ForegroundColor Cyan
+Write-Host 'CorCystems, Inc. - After Tools Menu' -ForegroundColor Cyan
 $afterToolsMenuSelection = Read-Host $afterToolsMenu
 
 Switch ($afterToolsMenuSelection) {
-    "B" {
+    'B' {
         Main-Menu
     }
-    "Q" {
-        Write-Host "Quitting" -ForegroundColor Green
+    'Q' {
+        Write-Host 'Quitting' -ForegroundColor Green
     }
     default {
-        Write-Host "Please type a valid option and try again." -ForegroundColor Yellow
+        Write-Host 'Please type a valid option and try again.' -ForegroundColor Yellow
     }
     }
 }
