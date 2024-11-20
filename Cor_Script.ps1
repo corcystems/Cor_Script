@@ -160,7 +160,7 @@ if($fileHash.Hash -eq $localHash.Hash){
 function CWA-Uninstall{
     clear
     write-host "Uninstalling CW Automate then sleeping for 15 seconds before continuing."
-    New-Item $LabtechLocalPath -Type Directory
+    New-Item $LabtechLocalPath -Type Directory -Force
     if (Test-Path -Path $LabtechUninstallerLocal) {
         Remove-Item $LabtechUninstallerLocal -force
     }    
@@ -195,7 +195,7 @@ function CWA-Install{
     # Download and install CW Automate
     write-host "Downloading then launching CW Automate installer for Location $ClientLocation."
 	if(!(Test-Path -path "$LabtechLocalPath")){
-		New-Item $LabtechLocalPath -Type Directory
+		New-Item $LabtechLocalPath -Type Directory -Force
 	}
     if (Test-Path -Path $LabtechInstalerLocal) {
         Remove-Item $LabtechInstalerLocal -force
@@ -231,12 +231,12 @@ function CWSC-Uninstall{
 function CWSC-Install{
     clear
     write-host "CWSC Install"
-    New-Item $CWSCLocalPath -Type Directory
+    New-Item $CWSCLocalPath -Type Directory -Force
     if (Test-Path -Path $CWSCInstalerLocal) {
         Remove-Item $CWSCInstalerLocal -force
     }
     if(!(Test-Path -path "$CWSCLocalPath")){
-        New-Item $CWSCLocalPath -Type Directory
+        New-Item $CWSCLocalPath -Type Directory -Force
     }
     if (Test-Path -Path $CWSCInstalerLocal) {
     Remove-Item $CWSCInstalerLocal -force
@@ -272,12 +272,12 @@ function CWSCH-Uninstall{
 function CWSCH-Install{
     clear
     write-host "CWSCH Install"
-    New-Item $CWSCHLocalPath -Type Directory
+    New-Item $CWSCHLocalPath -Type Directory -Force
     if (Test-Path -Path $CWSCHInstalerLocal) {
         Remove-Item $CWSCHInstalerLocal -force
     }
     if(!(Test-Path -path "$CWSCHLocalPath")){
-        New-Item $CWSCHLocalPath -Type Directory
+        New-Item $CWSCHLocalPath -Type Directory -Force
     }
     if (Test-Path -Path $CWSCHInstalerLocal) {
     Remove-Item $CWSCHInstalerLocal -force
@@ -314,12 +314,12 @@ function Immy-Uninstall{
 function Immy-Install{
     clear
     write-host 'Immybot Install'
-    New-Item $ImmyLocalPath -Type Directory
+    New-Item $ImmyLocalPath -Type Directory -Force
     if (Test-Path -Path $ImmyInstalerLocal) {
         Remove-Item $ImmyInstalerLocal -force
     }
     if(!(Test-Path -path "$ImmyLocalPath")){
-        New-Item $ImmyLocalPath -Type Directory
+        New-Item $ImmyLocalPath -Type Directory -Force
     }
     if (Test-Path -Path $ImmyInstalerLocal) {
     Remove-Item $ImmyInstalerLocal -force
@@ -372,7 +372,7 @@ Function SysInternal-Tools {
     $baseurl = 'live.sysinternals.com/tools'
 
     if(-not (Test-Path $OutputFolder)){
-        $null = New-Item $OutputFolder -ItemType Directory
+        $null = New-Item $OutputFolder -ItemType Directory -Force
     }
 
     $output = Invoke-WebRequest live.sysinternals.com/tools -UseBasicParsing
