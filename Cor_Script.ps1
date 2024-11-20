@@ -1,7 +1,7 @@
 <#
 .NOTES
 Author:  Mike Hauser
-Version: 0.2
+Version: 0.3
 
 .SYNOPSIS
 This is script for some tasks at CorCystems.
@@ -33,7 +33,7 @@ Runs an internet speed test on the machine.
 param(
     [switch] $Help,
     [parameter(Mandatory = $false, ParameterSetName = 'Silent')]
-    [ValidateSet("CWAInstall","CWAUninstall","CWSCInstall","CWSCUninstall","CWSCHInstall","CWSCHUninstall","GetIP","ImmyInstall","ImmyUninstall","PrintRepair","SpeedTest","UpdateScript")]
+    [ValidateSet("CWAInstall","CWAUninstall","CWSCInstall","CWSCUninstall","CWSCHInstall","CWSCHUninstall","GetIP","ImmyInstall","ImmyUninstall","PrintRepair","SpeedTest","SysInternals","UpdateScript")]
     [string] $Silent
 )
 
@@ -76,6 +76,9 @@ if ($silent){
         "SpeedTest" {
             $silentApp = "Speed-Test"
         }
+        "SysInternals" {
+            $silentApp = "SysInternal-Tools"
+        }
         "UpdateScript" {
             $silentApp = "Update-CorScript"
         }
@@ -89,7 +92,7 @@ if ($silent){
 
 
 ######### Variables #########
-$scriptVersion = '0.2'
+$scriptVersion = '0.3'
 $scriptURL = 'https://raw.githubusercontent.com/corcystems/Cor_Script/main/Cor_Script.ps1'
 $scriptPath = 'C:\CorTools\Cor_Script.ps1'
 
@@ -261,6 +264,43 @@ function Repair-Spooler{
     write-host "Repair Spooler"
     AfterOptions-Menu
 }
+# Run sysinternaltools
+Function SysInternal-Tools {
+    clear
+    $OutputFolder = (Join-Path $env:TEMP sysinternals)
+
+    $baseurl = 'live.sysinternals.com/tools'
+
+    if(-not (Test-Path $OutputFolder)){
+        $null = New-Item $OutputFolder -ItemType Directory
+    }
+
+    $output = Invoke-WebRequest live.sysinternals.com/tools -UseBasicParsing
+
+
+    $tools = foreach($entry in $output.Links.outerhtml){
+        if($entry -match 'tools/(?<URL>.+?)">(?<FileName>.+?.exe)<'){
+            $Matches.Remove(0)
+            $Matches.URL = "$baseurl/$($Matches.URL)"
+            [PSCustomObject]$Matches
+        }
+    }
+
+    $selected = $tools | Select-Object FileName, URL | Out-GridView -PassThru -Title "Please select the tool(s) to download"
+
+    if(-not $selected){
+        return
+        AfterOptions-Menu
+    }
+
+    foreach($entry in $selected){
+        Invoke-RestMethod $entry.URL -OutFile (Join-Path $OutputFolder $entry.filename)
+    }
+
+    Invoke-Item $OutputFolder
+    AfterOptions-Menu
+}
+
 
 ## Informational 
 # DSREGCMD /STATUS (for domain / azure join info)
@@ -418,6 +458,7 @@ $troubleshootingMenu=@"
 6 Run a DISM Scan
 7 Run a SFC Scan
 8 Run a SpeedTest
+9 Run SysInternalTools
 B Go Back to Main Menu.
 Q Quit
 Select a task or Q to quit
@@ -450,6 +491,9 @@ Switch($troubleshootingMenuSelection){
     }
     "8" {
         Speed-Test
+    }
+    "9" {
+        SysInternal-Tools
     }
     "B" {
         Main-Menu
