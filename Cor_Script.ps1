@@ -59,7 +59,7 @@ if ($silent){
             $silentApp = "CWSCH-Install"
         }
         "CWSCHUninstall" {
-            $silentApp = "CWSCH-Unistall"
+            $silentApp = "CWSCH-Unisntall"
         }
         "GetIP" {
             $silentApp = "Public-IP"
